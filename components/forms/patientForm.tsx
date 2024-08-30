@@ -10,6 +10,8 @@ import CustomFormField from "../customFormField"
 import SubmitButton from "../submitButton"
 import { useState } from "react"
 import { UserFormValidation } from "@/lib/validation"
+import { useRouter } from "next/navigation"
+import { createUser } from "@/lib/actions/patient.actions"
 
 
 export enum FormFieldType{
@@ -19,11 +21,13 @@ PHONE_INPUT= 'phoneInput',
 CHECKBOX = 'checkbox',
 DATEPICKER = 'datePicker',
 SELECT = 'select',
-SKELETON = 'skeleton'
+SKELETON = 'skeleton',
+DATE_PICKER = "DATE_PICKER"
 }
 
 
 const  PatientForm = () => {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof UserFormValidation>>({
     resolver: zodResolver(UserFormValidation),
@@ -34,9 +38,34 @@ const  PatientForm = () => {
     },
   })
 
-  function onSubmit(values: z.infer<typeof UserFormValidation>) {
-    console.log(values)
-  }
+  const onSubmit = async (values: z.infer<typeof UserFormValidation>) => {
+    setIsLoading(true);
+
+    try {
+      const user = {
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+      };
+      console.log("Submitting user:", user);
+
+      const newUser = await createUser(user);
+
+      if (newUser) {
+        console.log("New user created:", newUser);
+        console.log("Navigating to:", `/patients/${newUser.$id}/register`);
+        router.push(`/patients/${newUser.$id}/register`);
+      }
+      else{
+        console.error("User creation failed or $id is missing");
+      }
+    } 
+    catch (error) {
+      console.log("Error during user creation:", error);
+    }
+
+    setIsLoading(false);
+  };
   return (
          <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 flex-1">
