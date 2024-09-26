@@ -51,8 +51,8 @@ cell: ({ row }) => <p className="text-14-medium">{row.original.patient.name}</p>
     return (
         <div className="flex items-center gap-3">
             <Image 
-            src={doctor?.image}
-            alt={doctor?.name}
+            src={doctor?.image!}
+            alt="doctor"
             width={100} 
             height={100}
             className="size-8"
@@ -60,6 +60,7 @@ cell: ({ row }) => <p className="text-14-medium">{row.original.patient.name}</p>
             <p className="whitespace-nowrap">Dr.{doctor?.name}</p>
         </div>
     )
+    
     }
   },
   {
